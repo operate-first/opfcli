@@ -20,3 +20,12 @@ repos:
         files: \.(yaml|yml)$
         types: [file, yaml]
         entry: yamllint --strict -c yamllint-config.yaml
+
+  - repo: git://github.com/dnephin/pre-commit-golang
+    rev: f780b51bd3
+    hooks:
+      - id: go-fmt
+      - id: golangci-lint
+      - id: go-unit-tests
+      - id: go-build
+      - id: go-mod-tidy

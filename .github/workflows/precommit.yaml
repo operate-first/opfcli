@@ -1,0 +1,35 @@
+name: pre-commit
+on:
+  push:
+  pull_request:
+
+jobs:
+  Run-Precommit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Create cache directory
+        run: |
+          mkdir -p ~/cache
+
+      - name: Activate cache
+        uses: actions/cache@v2
+        with:
+          path: ~/cache
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/go.sum') }}
+
+      - name: Run pre-commit
+        run: >
+          docker run --rm
+          -v ~/cache:/cache
+          -e XDG_CACHE_HOME=/cache
+          -e GOCACHE=/cache/go-build
+          -e GOMODCACHE=/cache/go-mod
+          -e PRE_COMMIT_HOME=/cache/pre-commit
+          -e HOME=/build/src
+          -v $PWD:/build/src
+          -w /build/src
+          -u $UID
+          quay.io/larsks/opf-pre-commit:0b40f89 pre-commit run --all-files

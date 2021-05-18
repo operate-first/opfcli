@@ -22,6 +22,7 @@ var createProjectCmd = &cobra.Command{
 		projectOwner := args[1]
 		projectDescription := cmd.Flag("description").Value.String()
 
+		//revive:disable:if-return
 		if err = createNamespace(projectName, projectOwner, projectDescription); err != nil {
 			return err
 		}
@@ -31,6 +32,7 @@ var createProjectCmd = &cobra.Command{
 		if err = createGroup(projectOwner, true); err != nil {
 			return err
 		}
+		//revive:enable:if-return
 
 		return nil
 	},
