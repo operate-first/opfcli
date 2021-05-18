@@ -1,0 +1,118 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  check_tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Verify this is an annotated tag
+        run: |
+          if [ -z "$GITHUB_REF" ]; then
+            echo "ERROR: GITHUB_REF is undefined" >&2
+            exit 1
+          fi
+
+          git fetch --force origin +$GITHUB_REF:$GITHUB_REF
+
+          tag_type=$(git cat-file -t $GITHUB_REF)
+          if [ "$tag_type" != "tag" ]; then
+            echo "ERROR: Please use annotated tags" >&2
+              exit 1
+          fi
+
+  precommit:
+    needs: check_tag
+    runs-on: ubuntu-latest
+    container:
+      # https://github.com/larsks/opf-go-precommit
+      image: quay.io/larsks/opf-go-precommit:d3dc2d2
+      env:
+        XDG_CACHE_HOME: /cache
+        GOCACHE: /cache/go-build
+        GOMODCACHE: /cache/go-mod
+        PRE_COMMIT_HOME: /cache/pre-commit
+      volumes:
+        - /cache
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Activate cache
+        uses: actions/cache@v2
+        with:
+          path: /cache
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/go.sum,.pre-commit-config.yaml') }}
+
+      - name: Run pre-commit checks
+        run: pre-commit run --all-files
+
+  build:
+    needs: precommit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos:
+          - linux
+          - darwin
+        goarch:
+          - amd64
+          - arm64
+          - arm
+        include:
+          - goos: linux
+            goarch: arm
+            goarm: 7
+        exclude:
+          - goos: darwin
+            goarch: arm
+    container:
+      # https://github.com/larsks/opf-go-precommit
+      image: quay.io/larsks/opf-go-precommit:d3dc2d2
+      env:
+        XDG_CACHE_HOME: /cache
+        GOCACHE: /cache/go-build
+        GOMODCACHE: /cache/go-mod
+        PRE_COMMIT_HOME: /cache/pre-commit
+      volumes:
+        - /cache
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Activate cache
+        uses: actions/cache@v2
+        with:
+          path: /cache
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/go.sum') }}
+
+      - name: Build binaries
+        run: |
+          make
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          GOARM: ${{ matrix.goarm }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: opfcli-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: opfcli-${{ matrix.goos }}-${{ matrix.goarch }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Create release
+        uses: ncipollo/release-action@v1.8.6
+        with:
+          artifacts: artifacts/opfcli-*-*/*
+          token: ${{ secrets.GITHUB_TOKEN }}

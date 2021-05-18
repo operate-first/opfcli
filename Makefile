@@ -1,3 +1,4 @@
+EXE = opfcli-$(shell go env GOOS)-$(shell go env GOARCH)
 SRCS = $(shell find . -type f -name '*.go')
 PKG = $(shell go list)
 VERSION = $(shell git describe --tags --exact-match 2> /dev/null || echo unknown)
@@ -9,11 +10,10 @@ GOLDFLAGS = \
 	    -X '$(PKG)/version.BuildHash=$(COMMIT)' \
 	    -X '$(PKG)/version.BuildDate=$(DATE)'
 
-all: opfcli
+all: $(EXE)
 
-opfcli: $(SRCS)
-	go test ./...
-	go build -o $@ -ldflags "$(GOLDFLAGS)" .
+$(EXE): $(SRCS)
+	go build -o $@ -ldflags "$(GOLDFLAGS)"
 
 clean:
-	rm -f opfcli
+	rm -f $(EXE)
