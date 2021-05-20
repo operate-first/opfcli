@@ -1,0 +1,12 @@
+managers:
+  - name: version
+    configuration:
+      maintainers:
+        - larsks
+        - HumairAK
+        - tumido
+        - 4n4nd
+      assignees:
+        - sesheta
+      labels: [bot]
+      changelog_file: true
