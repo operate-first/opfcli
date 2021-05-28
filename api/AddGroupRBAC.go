@@ -17,7 +17,7 @@ var validRoles = map[string]bool{
 
 func (api *API) AddGroupRBAC(projectName, groupName, roleName string) error {
 	if !validRoles[roleName] {
-		return fmt.Errorf("no such role named %q", roleName)
+		return fmt.Errorf("role %s does not exist", roleName)
 	}
 
 	bindingName := fmt.Sprintf("project-%s-rolebindings", roleName)

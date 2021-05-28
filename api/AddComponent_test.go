@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func (ctx *Context) TestAddComponent() {
-	assert := require.New(ctx.T())
+func (suite *apiTestSuite) TestAddComponent() {
+	assert := require.New(suite.T())
 
 	// Should fail if project does not exist
-	err := ctx.api.AddComponent(
+	err := suite.api.AddComponent(
 		"testproject",
 		"testcomponent",
 	)
@@ -20,7 +20,7 @@ func (ctx *Context) TestAddComponent() {
 
 	// ---
 
-	err = ctx.api.CreateNamespace(
+	err = suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
 		"test description",
@@ -28,7 +28,7 @@ func (ctx *Context) TestAddComponent() {
 	assert.Nil(err)
 
 	// Should fail if component does not exist
-	err = ctx.api.AddComponent(
+	err = suite.api.AddComponent(
 		"testproject",
 		"testcomponent",
 	)
@@ -37,12 +37,12 @@ func (ctx *Context) TestAddComponent() {
 	// ---
 
 	err = os.MkdirAll(filepath.Join(
-		ctx.dir, ctx.api.AppName, constants.ComponentPath, "testcomponent",
+		suite.dir, suite.api.AppName, constants.ComponentPath, "testcomponent",
 	), 0755)
 	assert.Nil(err)
 
 	// Should succeed
-	err = ctx.api.AddComponent(
+	err = suite.api.AddComponent(
 		"testproject",
 		"testcomponent",
 	)
@@ -52,5 +52,5 @@ func (ctx *Context) TestAddComponent() {
 		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
 	}
 
-	compareWithExpected(assert, "testdata/AddComponent", ctx.dir, expectedPaths)
+	compareWithExpected(assert, "testdata/AddComponent", suite.dir, expectedPaths)
 }
