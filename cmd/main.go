@@ -13,14 +13,6 @@ import (
 )
 
 func initConfig(cmd *cobra.Command, opfapi *api.API, config *viper.Viper) error {
-	if err := config.BindPFlag("app-name", cmd.Flags().Lookup("app-name")); err != nil {
-		log.Fatalf("failed to bind flag app-name: %v", err)
-	}
-
-	if err := config.BindPFlag("repo-dir", cmd.Flags().Lookup("repo-dir")); err != nil {
-		log.Fatalf("failed to bind flag repo-dir: %v", err)
-	}
-
 	cfgFile, err := cmd.Flags().GetString("config-file")
 	if err != nil {
 		return err
@@ -96,6 +88,14 @@ configuration repository.`,
 		"app-name", "a", "cluster-scope", "application name")
 	cmd.PersistentFlags().StringP(
 		"repo-dir", "r", "", "path to opf repository")
+
+	if err := config.BindPFlag("app-name", cmd.PersistentFlags().Lookup("app-name")); err != nil {
+		log.Fatalf("failed to bind flag app-name: %v", err)
+	}
+
+	if err := config.BindPFlag("repo-dir", cmd.PersistentFlags().Lookup("repo-dir")); err != nil {
+		log.Fatalf("failed to bind flag repo-dir: %v", err)
+	}
 
 	cmd.AddCommand(
 		NewCmdVersion(opfapi),
