@@ -4,4 +4,5 @@ resources:
     - namespace.yaml
 components:
     - ../../../../components/project-admin-rolebindings/testgroup
+    - ../../../../components/resourcequotas/testquota
     - ../../../../components/limitranges/default

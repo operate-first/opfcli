@@ -24,6 +24,8 @@ func (suite *apiTestSuite) TestAddComponent() {
 		"testproject",
 		"testgroup",
 		"test description",
+		"",
+		false,
 	)
 	assert.Nil(err)
 

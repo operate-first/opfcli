@@ -12,7 +12,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (api *API) CreateNamespace(projectName, projectOwner, projectDescription string) error {
+func (api *API) CreateNamespace(
+	projectName, projectOwner, projectDescription string,
+	projectQuota string,
+	disableLimitrange bool,
+) error {
 	path := filepath.Join(
 		api.RepoDirectory, api.AppName,
 		constants.NamespacePath, projectName, "namespace.yaml")
@@ -24,6 +28,34 @@ func (api *API) CreateNamespace(projectName, projectOwner, projectDescription st
 
 	if exists {
 		return fmt.Errorf("namespace %s already exists", projectName)
+	}
+
+	components := []string{
+		filepath.Join(
+			constants.ComponentRelPath,
+			"project-admin-rolebindings",
+			projectOwner,
+		),
+	}
+
+	if len(projectQuota) > 0 {
+		components = append(
+			components,
+			filepath.Join(
+				constants.ComponentRelPath,
+				"resourcequotas",
+				projectQuota,
+			))
+	}
+
+	if !disableLimitrange {
+		components = append(
+			components,
+			filepath.Join(
+				constants.ComponentRelPath,
+				"limitranges",
+				"default",
+			))
 	}
 
 	ns := models.NewNamespace(projectName, projectOwner, projectDescription)
@@ -41,13 +73,7 @@ func (api *API) CreateNamespace(projectName, projectOwner, projectDescription st
 
 	kustom := models.NewKustomization(
 		[]string{"namespace.yaml"},
-		[]string{
-			filepath.Join(
-				constants.ComponentRelPath,
-				"project-admin-rolebindings",
-				projectOwner,
-			),
-		},
+		components,
 	)
 	err = kustom.Write(filepath.Dir(path))
 	if err != nil {

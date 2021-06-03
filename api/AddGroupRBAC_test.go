@@ -34,6 +34,8 @@ func (suite *apiTestSuite) TestAddGroupRBAC() {
 		"testproject",
 		"testgroup",
 		"test description",
+		"",
+		false,
 	)
 	assert.Nil(err)
 
