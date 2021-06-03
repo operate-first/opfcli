@@ -63,6 +63,13 @@ Usage:
 Flags:
   -d, --description string   Team description
   -h, --help                 help for create-project
+  -n, --no-limitrange        Do not set a limitrange on this project
+  -q, --quota string         Set a quota on this project
+
+Global Flags:
+  -a, --app-name string      application name (default "cluster-scope")
+  -f, --config-file string   configuration file
+  -r, --repo-dir string      path to opf repository
 ```
 
 ## enable-monitoring

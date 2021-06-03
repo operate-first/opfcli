@@ -11,15 +11,7 @@ import (
 
 // WriteKustomization creates a kustomization.yaml in the given path.
 func WriteKustomization(path string, resources []string, components []string) error {
-	kustom := models.NewKustomization()
-
-	if len(resources) > 0 {
-		kustom.Resources = resources
-	}
-
-	if len(components) > 0 {
-		kustom.Components = components
-	}
+	kustom := models.NewKustomization(resources, components)
 
 	kustomOut := models.ToYAML(kustom)
 
@@ -38,11 +30,7 @@ func WriteKustomization(path string, resources []string, components []string) er
 // WriteComponent creates a kustomization.yaml in the given path. This
 // creates a Component rather than a Kustomization.
 func WriteComponent(path string, resources []string) error {
-	kustom := models.NewKomponent()
-
-	if len(resources) > 0 {
-		kustom.Resources = resources
-	}
+	kustom := models.NewKomponent(resources)
 
 	kustomOut := models.ToYAML(kustom)
 

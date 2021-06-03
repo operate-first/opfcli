@@ -2,78 +2,66 @@
 package cmd
 
 import (
-	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
+	"github.com/operate-first/opfcli/api"
+	"github.com/operate-first/opfcli/utils"
 	log "github.com/sirupsen/logrus"
-
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"github.com/operate-first/opfcli/utils"
 )
 
-const defaultAppName = "cluster-scope"
-const namespacePath = "base/core/namespaces"
-const groupPath = "base/user.openshift.io/groups"
-const componentPath = "components"
-const componentRelPath = "../../../../components"
-
-var config = viper.New()
-
-var cfgFile string
-var appName string
-var repoDirectory string
-
-var rootCmd = &cobra.Command{
-	Use:   "opfcli",
-	Short: "A command line tool for Operate First GitOps",
-	Long: `A command line tool for Operate First GitOps.
-
-Use opfcli to interact with an Operate First style Kubernetes
-configuration repository.`,
-}
-
-// Execute processes the opfcli command line.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		log.Fatalf("Error: %s", err)
+func initConfig(cmd *cobra.Command, opfapi *api.API, config *viper.Viper) error {
+	if err := config.BindPFlag("app-name", cmd.Flags().Lookup("app-name")); err != nil {
+		log.Fatalf("failed to bind flag app-name: %v", err)
 	}
-}
 
-func init() {
-	loglevel, err := strconv.Atoi(os.Getenv("OPF_LOGLEVEL"))
+	if err := config.BindPFlag("repo-dir", cmd.Flags().Lookup("repo-dir")); err != nil {
+		log.Fatalf("failed to bind flag repo-dir: %v", err)
+	}
+
+	cfgFile, err := cmd.Flags().GetString("config-file")
 	if err != nil {
-		loglevel = 1
+		return err
 	}
 
-	switch {
-	case loglevel >= 2:
-		log.SetLevel(log.DebugLevel)
-	case loglevel >= 1:
-		log.SetLevel(log.InfoLevel)
-	default:
-		log.SetLevel(log.WarnLevel)
+	repoDirectory, err := cmd.Flags().GetString("repo-dir")
+	if err != nil {
+		return err
 	}
 
-	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVarP(
-		&cfgFile, "config", "f", "", "configuration file")
-	rootCmd.PersistentFlags().StringVarP(
-		&appName, "app-name", "a", "cluster-scope", "application name")
-	rootCmd.PersistentFlags().StringVarP(
-		&repoDirectory, "repodir", "R", "", "path to opf repository")
-
-	if err = config.BindPFlag("app-name", rootCmd.PersistentFlags().Lookup("app-name")); err != nil {
-		panic(err)
+	if repoDirectory == "" {
+		repoDirectory, err = utils.FindRepoDir()
+		if err != nil {
+			repoDirectory, err = filepath.Abs(".")
+			if err != nil {
+				log.Fatalf("failed to determine repository directory: %v", err)
+			}
+		}
 	}
+	config.SetDefault("repo-dir", repoDirectory)
+	log.Debugf("using %s as repository directory", repoDirectory)
+
+	if cfgFile != "" {
+		log.Debugf("using explicit configuration file %s", cfgFile)
+		config.SetConfigFile(cfgFile)
+	} else {
+		config.AddConfigPath(repoDirectory)
+	}
+	if err := config.ReadInConfig(); err != nil {
+		log.Debugf("failed to read configuration: %v", err)
+	}
+	log.Debugf("read configuration from %s", config.ConfigFileUsed())
+
+	opfapi.UpdateFromConfig(config)
+
+	return nil
 }
 
-func initConfig() {
+func NewConfig() *viper.Viper {
+	config := viper.New()
+
 	config.SetEnvPrefix("opf")
 	config.AutomaticEnv()
 	config.SetConfigName(".opfcli")
@@ -81,36 +69,41 @@ func initConfig() {
 	replacer := strings.NewReplacer("-", "_")
 	config.SetEnvKeyReplacer(replacer)
 
-	config.SetDefault("app-name", defaultAppName)
+	log.Debugf("returning new config")
 
-	if cfgFile != "" {
-		config.SetConfigFile(cfgFile)
-		if err := config.ReadInConfig(); err != nil {
-			log.Debugf("failed to read configuration: %v", err)
-		}
-	} else {
-		home, err := homedir.Dir()
-		if err == nil {
-			config.AddConfigPath(home)
-		}
+	return config
+}
 
-		if repoDirectory == "" {
-			repoDirectory, err = utils.FindRepoDir()
-			if err != nil {
-				repoDirectory, err = filepath.Abs(".")
-				if err != nil {
-					log.Fatalf("failed to determine repository directory: %v", err)
-				}
-			}
-		}
-		log.Debugf("using %s as repository directory", repoDirectory)
+func NewCmdRoot() *cobra.Command {
+	opfapi := &api.API{}
+	config := NewConfig()
 
-		config.AddConfigPath(repoDirectory)
-		if err = config.ReadInConfig(); err != nil {
-			log.Debugf("failed to read configuration: %v", err)
-		}
-		if config.ConfigFileUsed() != "" {
-			log.Printf("read configuration from %s", config.ConfigFileUsed())
-		}
+	cmd := &cobra.Command{
+		Use:   "opfcli",
+		Short: "A command line tool for Operate First GitOps",
+		Long: `A command line tool for Operate First GitOps.
+
+Use opfcli to interact with an Operate First style Kubernetes
+configuration repository.`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			return initConfig(cmd, opfapi, config)
+		},
 	}
+
+	cmd.PersistentFlags().StringP(
+		"config-file", "f", "", "configuration file")
+	cmd.PersistentFlags().StringP(
+		"app-name", "a", "cluster-scope", "application name")
+	cmd.PersistentFlags().StringP(
+		"repo-dir", "r", "", "path to opf repository")
+
+	cmd.AddCommand(
+		NewCmdVersion(opfapi),
+		NewCmdCreateGroup(opfapi),
+		NewCmdCreateProject(opfapi),
+		NewCmdGrantAccess(opfapi),
+		NewCmdEnableMonitoring(opfapi),
+	)
+
+	return cmd
 }

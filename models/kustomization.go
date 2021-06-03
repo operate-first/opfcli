@@ -1,8 +1,11 @@
 package models
 
 import (
+	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
 
@@ -21,23 +24,26 @@ type Kustomization struct {
 }
 
 // NewKustomization creates a new Kustomization object.
-func NewKustomization() Kustomization {
+func NewKustomization(resources, components []string) Kustomization {
 	rsrc := Kustomization{
 		Resource: Resource{
 			APIVersion: "kustomize.config.k8s.io/v1beta1",
 			Kind:       "Kustomization",
 		},
+		Resources:  resources,
+		Components: components,
 	}
 	return rsrc
 }
 
 // NewKomponent creates a new Komponent object.
-func NewKomponent() Komponent {
+func NewKomponent(resources []string) Komponent {
 	rsrc := Komponent{
 		Resource: Resource{
 			APIVersion: "kustomize.config.k8s.io/v1alpha1",
 			Kind:       "Component",
 		},
+		Resources: resources,
 	}
 	return rsrc
 }
@@ -58,4 +64,34 @@ func KustomizeFromYAMLPath(path string) (Kustomization, error) {
 	}
 
 	return kustom, nil
+}
+
+func (kustom *Kustomization) Write(path string) error {
+	kustomOut := ToYAML(kustom)
+
+	log.Debugf("writing kustomization for %s", path)
+	err := ioutil.WriteFile(
+		filepath.Join(path, "kustomization.yaml"),
+		kustomOut, 0644,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to write kustomization: %w", err)
+	}
+
+	return nil
+}
+
+func (komp *Komponent) Write(path string) error {
+	kompOut := ToYAML(komp)
+
+	log.Debugf("writing component kustomization for %s", path)
+	err := ioutil.WriteFile(
+		filepath.Join(path, "kustomization.yaml"),
+		kompOut, 0644,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to write kustomization: %w", err)
+	}
+
+	return nil
 }
