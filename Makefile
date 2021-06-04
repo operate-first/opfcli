@@ -16,4 +16,13 @@ $(EXE): $(SRCS)
 	go build -o $@ -ldflags "$(GOLDFLAGS)"
 
 clean:
-	rm -f $(EXE)
+	rm -f $(EXE) coverage.html coverage.txt coverage.out
+
+coverage.html: coverage.out
+	go tool cover -html $< -o $@
+
+coverage.txt: coverage.out
+	go tool cover -func $< -o $@
+
+coverage.out: $(SRCS)
+	go test -coverprofile=$@ ./...
