@@ -8,7 +8,8 @@ To build this tool from a checked out copy of the repository, run:
 make
 ```
 
-This will produce an executable named `opfcli`.
+This will produce an executable named `opfcli-<os>-<arch>` (for
+example, `opfcli-linux-amd64`).
 
 ## Usage
 

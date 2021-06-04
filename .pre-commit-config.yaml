@@ -1,4 +1,3 @@
----
 repos:
   - repo: git://github.com/pre-commit/pre-commit-hooks
     rev: v3.3.0
@@ -19,4 +18,13 @@ repos:
       - id: yamllint
         files: \.(yaml|yml)$
         types: [file, yaml]
-        entry: yamllint --strict -c yamllint-config.yaml
+        entry: yamllint --strict
+
+  - repo: git://github.com/dnephin/pre-commit-golang
+    rev: f780b51bd3
+    hooks:
+      - id: go-fmt
+      - id: golangci-lint
+      - id: go-unit-tests
+      - id: go-build
+      - id: go-mod-tidy
