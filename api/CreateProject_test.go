@@ -31,6 +31,32 @@ func (suite *apiTestSuite) TestCreateProject() {
 	compareWithExpected(assert, "testdata/CreateProject", suite.dir, expectedPaths)
 }
 
+func (suite *apiTestSuite) TestCreateProjectWhenGroupExists() {
+	assert := require.New(suite.T())
+
+	err := suite.api.CreateGroup("testgroup", false)
+	assert.Nil(err)
+
+	err = suite.api.CreateProject(
+		"testproject",
+		"testgroup",
+		"test description",
+		"",
+		false,
+	)
+	assert.Nil(err)
+
+	expectedPaths := []string{
+		"cluster-scope/base/core/namespaces/testproject/namespace.yaml",
+		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
+		"cluster-scope/base/user.openshift.io/groups/testgroup/group.yaml",
+		"cluster-scope/base/user.openshift.io/groups/testgroup/kustomization.yaml",
+		"cluster-scope/components/project-admin-rolebindings/testgroup/rbac.yaml",
+	}
+
+	compareWithExpected(assert, "testdata/CreateProject", suite.dir, expectedPaths)
+}
+
 func (suite *apiTestSuite) TestCreateProjectQuota() {
 	assert := require.New(suite.T())
 
