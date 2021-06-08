@@ -23,12 +23,5 @@ A clear and concise description of what you expected to happen.
 **Workaround (if any)**
 Any manual steps that allow you to resolve the issue
 
-**Open Data Hub Version**
-Please attach relevant kfdef manifest if applicable
-
-**OpenShift Version**
-Version #:
-Provider (Baremetal, OpenStack, RHV, AWS, OKD, CodeReady Containers, ...):
-
 **Additional context**
 Add any other context about the problem here.
