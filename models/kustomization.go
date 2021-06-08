@@ -21,6 +21,7 @@ type Kustomization struct {
 	Resource   `yaml:",inline"`
 	Resources  []string `yaml:",omitempty"`
 	Components []string `yaml:",omitempty"`
+	Namespace  string   `yaml:",omitempty"`
 }
 
 // NewKustomization creates a new Kustomization object.
