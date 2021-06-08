@@ -43,11 +43,11 @@ func (suite *commandTestSuite) TestCreateProjectBasic() {
 
 	// ---
 
-	// Should fail because group already exists
+	// Should succeed if group already exists
 	cmd = NewCmdCreateProject(suite.api)
-	cmd.SetArgs([]string{"arg1", "arg2"})
+	cmd.SetArgs([]string{"arg3", "arg2"})
 	err = cmd.Execute()
-	assert.EqualError(err, "group arg2 already exists")
+	assert.Nil(err)
 }
 
 func (suite *commandTestSuite) TestCreateProjectQuota() {

@@ -41,7 +41,7 @@ func (api *API) CreateProject(
 
 	if err := api.CreateGroup(
 		projectOwner,
-		false,
+		true,
 	); err != nil {
 		return err
 	}
