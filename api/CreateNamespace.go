@@ -16,6 +16,7 @@ func (api *API) CreateNamespace(
 	projectName, projectOwner, projectDescription string,
 	projectQuota string,
 	disableLimitrange bool,
+	existsOk bool,
 ) error {
 	path := filepath.Join(
 		api.RepoDirectory, api.AppName,
@@ -27,6 +28,10 @@ func (api *API) CreateNamespace(
 	}
 
 	if exists {
+		if existsOk {
+			log.Warnf("namespace %s already exists (continuing)", projectName)
+			return nil
+		}
 		return fmt.Errorf("namespace %s already exists", projectName)
 	}
 
