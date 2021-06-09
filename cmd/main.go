@@ -103,6 +103,7 @@ configuration repository.`,
 		NewCmdCreateProject(opfapi),
 		NewCmdGrantAccess(opfapi),
 		NewCmdEnableMonitoring(opfapi),
+		NewCmdCompletion(),
 	)
 
 	return cmd
