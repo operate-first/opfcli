@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"k8s.io/client-go/util/homedir"
 )
 
 func initConfig(cmd *cobra.Command, opfapi *api.API, config *viper.Viper) error {
@@ -82,12 +83,24 @@ configuration repository.`,
 		},
 	}
 
+	var defaultKubeconfig string
+
+	if home := homedir.HomeDir(); home != "" {
+		defaultKubeconfig = filepath.Join(
+			home, ".kube", "config",
+		)
+	} else {
+		defaultKubeconfig = ""
+	}
+
 	cmd.PersistentFlags().StringP(
 		"config-file", "f", "", "configuration file")
 	cmd.PersistentFlags().StringP(
 		"app-name", "a", "cluster-scope", "application name")
 	cmd.PersistentFlags().StringP(
 		"repo-dir", "r", "", "path to opf repository")
+	cmd.PersistentFlags().String(
+		"kubeconfig", defaultKubeconfig, "path to kubeconfig")
 
 	if err := config.BindPFlag("app-name", cmd.PersistentFlags().Lookup("app-name")); err != nil {
 		log.Fatalf("failed to bind flag app-name: %v", err)
@@ -95,6 +108,10 @@ configuration repository.`,
 
 	if err := config.BindPFlag("repo-dir", cmd.PersistentFlags().Lookup("repo-dir")); err != nil {
 		log.Fatalf("failed to bind flag repo-dir: %v", err)
+	}
+
+	if err := config.BindPFlag("kubeconfig", cmd.PersistentFlags().Lookup("kubeconfig")); err != nil {
+		log.Fatalf("failed to bind flag kuebconfig: %v", err)
 	}
 
 	cmd.AddCommand(

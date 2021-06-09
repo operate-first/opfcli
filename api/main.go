@@ -9,6 +9,7 @@ import (
 type API struct {
 	AppName       string
 	RepoDirectory string
+	Kubeconfig    string
 }
 
 func New(appName, repoDirectory string) *API {
@@ -34,4 +35,7 @@ func (api *API) UpdateFromConfig(config *viper.Viper) {
 
 	api.RepoDirectory = config.GetString("repo-dir")
 	log.Debugf("got repodirectory: %s", api.RepoDirectory)
+
+	api.Kubeconfig = config.GetString("kubeconfig")
+	log.Debugf("got kubeconfig: %s", api.Kubeconfig)
 }
