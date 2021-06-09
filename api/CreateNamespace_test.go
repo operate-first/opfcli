@@ -11,8 +11,71 @@ func (suite *apiTestSuite) TestCreateNamespace() {
 		"test description",
 		"",
 		false,
+		false,
 	)
 	assert.Nil(err)
+
+	expectedPaths := []string{
+		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
+		"cluster-scope/base/core/namespaces/testproject/namespace.yaml",
+	}
+
+	compareWithExpected(assert, "testdata/CreateNamespace", suite.dir, expectedPaths)
+}
+
+func (suite *apiTestSuite) TestCreateNamespaceExistsOk() {
+	assert := require.New(suite.T())
+
+	err := suite.api.CreateNamespace(
+		"testproject",
+		"testgroup",
+		"test description",
+		"",
+		false,
+		false,
+	)
+	assert.Nil(err)
+
+	err = suite.api.CreateNamespace(
+		"testproject",
+		"testgroup",
+		"test description",
+		"",
+		false,
+		true,
+	)
+	assert.Nil(err)
+
+	expectedPaths := []string{
+		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
+		"cluster-scope/base/core/namespaces/testproject/namespace.yaml",
+	}
+
+	compareWithExpected(assert, "testdata/CreateNamespace", suite.dir, expectedPaths)
+}
+
+func (suite *apiTestSuite) TestCreateNamespaceExistsNotOk() {
+	assert := require.New(suite.T())
+
+	err := suite.api.CreateNamespace(
+		"testproject",
+		"testgroup",
+		"test description",
+		"",
+		false,
+		false,
+	)
+	assert.Nil(err)
+
+	err = suite.api.CreateNamespace(
+		"testproject",
+		"testgroup",
+		"test description",
+		"",
+		false,
+		false,
+	)
+	assert.EqualError(err, "namespace testproject already exists")
 
 	expectedPaths := []string{
 		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
@@ -31,6 +94,7 @@ func (suite *apiTestSuite) TestCreateNamespaceQuota() {
 		"testgroup",
 		"test description",
 		"testquota",
+		false,
 		false,
 	)
 	assert.Nil(err)
@@ -52,6 +116,7 @@ func (suite *apiTestSuite) TestCreateNamespaceNoLimitrange() {
 		"test description",
 		"",
 		true,
+		false,
 	)
 	assert.Nil(err)
 

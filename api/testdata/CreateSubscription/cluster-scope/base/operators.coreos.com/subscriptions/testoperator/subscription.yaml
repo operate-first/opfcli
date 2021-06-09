@@ -1,0 +1,9 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+    name: testoperator
+spec:
+    installPlanApproval: Automatic
+    name: testoperator
+    source: testcatalog
+    sourceNamespace: openshift-marketplace
