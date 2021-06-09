@@ -122,6 +122,7 @@ configuration repository.`,
 		NewCmdEnableMonitoring(opfapi),
 		NewCmdInstallOperator(opfapi),
 		NewCmdCompletion(),
+		NewCmdKafkaCaCrt(opfapi),
 	)
 
 	return cmd
