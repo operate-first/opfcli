@@ -12,7 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (api *API) CreateOperatorGroup(namespace string, allNamespaces bool) error {
+func (api *API) CreateOperatorGroup(namespace string, singleNamespace bool) error {
 
 	path := filepath.Join(
 		api.RepoDirectory, api.AppName,
@@ -30,7 +30,7 @@ func (api *API) CreateOperatorGroup(namespace string, allNamespaces bool) error 
 	}
 
 	og := models.NewOperatorGroup(
-		namespace, allNamespaces,
+		namespace, singleNamespace,
 	)
 
 	ogOut := models.ToYAML(og)

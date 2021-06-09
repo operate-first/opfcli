@@ -16,15 +16,15 @@ type OperatorGroupSpec struct {
 
 // NewOperatorGroup creates a new OperatorGroup object. The object's
 // metadata.name is set to the value of the "namespace" parameter.
-// If the "allnamespaces" is false, spec.targetNamespaces is set to include
+// If the "singleNamespace" is true, spec.targetNamespaces is set to include
 // the "namespace" string
-func NewOperatorGroup(namespace string, allNamespaces bool) OperatorGroup {
+func NewOperatorGroup(namespace string, singleNamespace bool) OperatorGroup {
 	if len(namespace) == 0 {
 		log.Fatal("an operator group requires a namespace")
 	}
 
 	targetNamespaces := []string{}
-	if !allNamespaces {
+	if singleNamespace {
 		targetNamespaces = append(targetNamespaces, namespace)
 	}
 

@@ -7,7 +7,7 @@ func (suite *apiTestSuite) TestCreateOperatorGroup() {
 
 	err := suite.api.CreateOperatorGroup(
 		"testproject",
-		true,
+		false,
 	)
 	assert.Nil(err)
 
@@ -24,7 +24,7 @@ func (suite *apiTestSuite) TestCreateOperatorGroupSingleNamespace() {
 
 	err := suite.api.CreateOperatorGroup(
 		"testproject",
-		false,
+		true,
 	)
 	assert.Nil(err)
 

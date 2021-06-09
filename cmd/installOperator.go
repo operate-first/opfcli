@@ -25,7 +25,7 @@ func NewCmdInstallOperator(opfapi *api.API) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			scope, err := cmd.Flags().GetBool("scope-to-single-namespace")
+			singleNamespace, err := cmd.Flags().GetBool("single-namespace")
 			if err != nil {
 				return err
 			}
@@ -46,7 +46,7 @@ func NewCmdInstallOperator(opfapi *api.API) *cobra.Command {
 				return err
 			}
 
-			if err := opfapi.CreateOperatorGroup(namespace, !scope); err != nil {
+			if err := opfapi.CreateOperatorGroup(namespace, singleNamespace); err != nil {
 				return err
 			}
 
@@ -60,6 +60,6 @@ func NewCmdInstallOperator(opfapi *api.API) *cobra.Command {
 	cmd.Flags().StringP("owner", "o", constants.DefaultOwner, "If a new namespace is created, owner must be set as well")
 	cmd.Flags().StringP("channel", "c", "", "Subscription channel")
 	cmd.Flags().BoolP("manual", "m", false, "Require manual approval install strategy")
-	cmd.Flags().BoolP("scope-to-single-namespace", "s", false, "Set an operator scope to a single namespace")
+	cmd.Flags().BoolP("single-namespace", "s", false, "Sets operator to be installed as 'SingleNamespace'")
 	return cmd
 }
