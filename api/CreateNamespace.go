@@ -79,6 +79,7 @@ func (api *API) CreateNamespace(
 	kustom := models.NewKustomization(
 		[]string{"namespace.yaml"},
 		components,
+		projectName,
 	)
 	err = kustom.Write(filepath.Dir(path))
 	if err != nil {

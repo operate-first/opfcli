@@ -11,7 +11,7 @@ import (
 
 // WriteKustomization creates a kustomization.yaml in the given path.
 func WriteKustomization(path string, resources []string, components []string) error {
-	kustom := models.NewKustomization(resources, components)
+	kustom := models.NewKustomization(resources, components, "")
 
 	kustomOut := models.ToYAML(kustom)
 

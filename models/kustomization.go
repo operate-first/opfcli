@@ -25,7 +25,7 @@ type Kustomization struct {
 }
 
 // NewKustomization creates a new Kustomization object.
-func NewKustomization(resources, components []string) Kustomization {
+func NewKustomization(resources, components []string, namespace string) Kustomization {
 	rsrc := Kustomization{
 		Resource: Resource{
 			APIVersion: "kustomize.config.k8s.io/v1beta1",
@@ -33,6 +33,7 @@ func NewKustomization(resources, components []string) Kustomization {
 		},
 		Resources:  resources,
 		Components: components,
+		Namespace:  namespace,
 	}
 	return rsrc
 }
