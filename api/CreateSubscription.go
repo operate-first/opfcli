@@ -50,7 +50,7 @@ func (api *API) CreateSubscription(name, catalog, namespace, channel string, man
 	}
 
 	kustomize := models.NewKustomization(
-		[]string{"subscription.yaml"}, []string{},
+		[]string{"subscription.yaml"}, nil, "",
 	)
 	kustomize.Namespace = namespace
 

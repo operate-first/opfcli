@@ -47,6 +47,7 @@ func (api *API) CreateGroup(groupName string, existsOk bool) error {
 	kustom := models.NewKustomization(
 		[]string{"group.yaml"},
 		nil,
+		"",
 	)
 	err = kustom.Write(filepath.Dir(path))
 	if err != nil {

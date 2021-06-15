@@ -46,9 +46,8 @@ func (api *API) CreateOperatorGroup(namespace string, singleNamespace bool) erro
 	}
 
 	kustomize := models.NewKustomization(
-		[]string{"operatorgroup.yaml"}, []string{},
+		[]string{"operatorgroup.yaml"}, nil, namespace,
 	)
-	kustomize.Namespace = namespace
 
 	err = kustomize.Write(filepath.Dir(path))
 	if err != nil {
