@@ -13,7 +13,7 @@ import (
 )
 
 func (api *API) CreateNamespace(
-	projectName, projectOwner, projectDescription string,
+	projectName, projectOwner, projectDisplayName string,
 	projectQuota string,
 	disableLimitrange bool,
 	existsOk bool,
@@ -63,7 +63,7 @@ func (api *API) CreateNamespace(
 			))
 	}
 
-	ns := models.NewNamespace(projectName, projectOwner, projectDescription)
+	ns := models.NewNamespace(projectName, projectOwner, projectDisplayName)
 	nsOut := models.ToYAML(ns)
 
 	log.Printf("writing namespace definition to %s", filepath.Dir(path))

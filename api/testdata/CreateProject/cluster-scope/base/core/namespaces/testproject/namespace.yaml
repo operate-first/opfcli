@@ -4,4 +4,4 @@ metadata:
     name: testproject
     annotations:
         openshift.io/requester: testgroup
-        openshift.io/display-name: test description
+        openshift.io/display-name: test display name
