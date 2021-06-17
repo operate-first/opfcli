@@ -14,7 +14,7 @@ func (suite *apiTestSuite) TestCreateProject() {
 	err := suite.api.CreateProject(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 	)
@@ -40,7 +40,7 @@ func (suite *apiTestSuite) TestCreateProjectWhenGroupExists() {
 	err = suite.api.CreateProject(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 	)
@@ -64,7 +64,7 @@ func (suite *apiTestSuite) TestCreateProjectQuota() {
 	err := suite.api.CreateProject(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"testquota",
 		false,
 	)
@@ -82,7 +82,7 @@ func (suite *apiTestSuite) TestCreateProjectQuota() {
 	err = suite.api.CreateProject(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"testquota",
 		false,
 	)

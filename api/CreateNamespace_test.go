@@ -8,7 +8,7 @@ func (suite *apiTestSuite) TestCreateNamespace() {
 	err := suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 		false,
@@ -29,7 +29,7 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsOk() {
 	err := suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 		false,
@@ -39,7 +39,7 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsOk() {
 	err = suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 		true,
@@ -60,7 +60,7 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsNotOk() {
 	err := suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 		false,
@@ -70,7 +70,7 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsNotOk() {
 	err = suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 		false,
@@ -92,7 +92,7 @@ func (suite *apiTestSuite) TestCreateNamespaceQuota() {
 	err := suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"testquota",
 		false,
 		false,
@@ -113,7 +113,7 @@ func (suite *apiTestSuite) TestCreateNamespaceNoLimitrange() {
 	err := suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		true,
 		false,

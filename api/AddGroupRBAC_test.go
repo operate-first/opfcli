@@ -33,7 +33,7 @@ func (suite *apiTestSuite) TestAddGroupRBAC() {
 	err = suite.api.CreateProject(
 		"testproject",
 		"testgroup",
-		"test description",
+		"test display name",
 		"",
 		false,
 	)

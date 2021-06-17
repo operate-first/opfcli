@@ -20,7 +20,7 @@ func NewCmdCreateProject(opfapi *api.API) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectName := args[0]
 			projectOwner := args[1]
-			projectDescription, err := cmd.Flags().GetString("description")
+			projectDisplayName, err := cmd.Flags().GetString("display-name")
 			if err != nil {
 				return err
 			}
@@ -34,14 +34,14 @@ func NewCmdCreateProject(opfapi *api.API) *cobra.Command {
 			}
 
 			return opfapi.CreateProject(
-				projectName, projectOwner, projectDescription,
+				projectName, projectOwner, projectDisplayName,
 				projectQuota,
 				disableLimitrange,
 			)
 		},
 	}
 
-	cmd.Flags().StringP("description", "d", "", "Team description")
+	cmd.Flags().StringP("display-name", "d", "", "Short team description for easy identification of project")
 	cmd.Flags().StringP("quota", "q", "", "Set a quota on this project")
 	cmd.Flags().BoolP("no-limitrange", "n", false, "Do not set a limitrange on this project")
 	return cmd

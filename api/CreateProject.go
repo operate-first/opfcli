@@ -29,7 +29,7 @@ func (api *API) ValidateQuota(projectQuota string) error {
 }
 
 func (api *API) CreateProject(
-	projectName, projectOwner, projectDescription string,
+	projectName, projectOwner, projectDisplayName string,
 	projectQuota string,
 	disableLimitrange bool,
 ) error {
@@ -53,7 +53,7 @@ func (api *API) CreateProject(
 	return api.CreateNamespace(
 		projectName,
 		projectOwner,
-		projectDescription,
+		projectDisplayName,
 		projectQuota,
 		disableLimitrange,
 		false,
