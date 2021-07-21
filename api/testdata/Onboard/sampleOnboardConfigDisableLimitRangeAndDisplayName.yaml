@@ -1,0 +1,9 @@
+env: MOC
+namespaces:
+  - enable_monitoring: false
+    name: testproject
+    project_display_name: testDisplayName
+    disable_limit_range: true
+project_description: This is the configuration for a sample project / app to onboard
+target_cluster: Smaug
+team_name: testgroup

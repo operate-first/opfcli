@@ -104,6 +104,7 @@ configuration repository.`,
 		NewCmdGrantAccess(opfapi),
 		NewCmdEnableMonitoring(opfapi),
 		NewCmdInstallOperator(opfapi),
+		NewCmdOnboard(opfapi),
 		NewCmdCompletion(),
 	)
 

@@ -1,0 +1,10 @@
+env: MOC
+namespaces:
+  - enable_monitoring: false
+    name: testproject
+project_description: This is the configuration for a sample project / app to onboard
+target_cluster: Smaug
+team_name: testgroup
+users:
+  - testing_gh_handle_1
+  - testing_gh_handle_2
