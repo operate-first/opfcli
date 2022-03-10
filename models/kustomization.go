@@ -1,47 +1,29 @@
 package models
 
 import (
-	"fmt"
 	"io/ioutil"
-	"path/filepath"
+	"sort"
 
-	log "github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v3"
+	kustomizationAPITypes "sigs.k8s.io/kustomize/api/types"
 )
 
-// Komponent represents a Kustomize Component. A Component is a collection of
-// resources that can be included in a Kustomization file.
-type Komponent struct {
-	Resource  `yaml:",inline"`
-	Resources []string `yaml:",omitempty"`
-}
-
-// Kustomization represents a kustomization file.
-type Kustomization struct {
-	Resource   `yaml:",inline"`
-	Resources  []string `yaml:",omitempty"`
-	Components []string `yaml:",omitempty"`
-	Namespace  string   `yaml:",omitempty"`
-}
-
-// NewKustomization creates a new Kustomization object.
-func NewKustomization(resources, components []string, namespace string) Kustomization {
-	rsrc := Kustomization{
-		Resource: Resource{
+func NewKustomization(resources []string, components []string, namespace string) kustomizationAPITypes.Kustomization {
+	rsrc := kustomizationAPITypes.Kustomization{
+		TypeMeta: kustomizationAPITypes.TypeMeta{
 			APIVersion: "kustomize.config.k8s.io/v1beta1",
 			Kind:       "Kustomization",
 		},
+		Namespace:  namespace,
 		Resources:  resources,
 		Components: components,
-		Namespace:  namespace,
 	}
 	return rsrc
 }
 
 // NewKomponent creates a new Komponent object.
-func NewKomponent(resources []string) Komponent {
-	rsrc := Komponent{
-		Resource: Resource{
+func NewKomponent(resources []string) kustomizationAPITypes.Kustomization {
+	rsrc := kustomizationAPITypes.Kustomization{
+		TypeMeta: kustomizationAPITypes.TypeMeta{
 			APIVersion: "kustomize.config.k8s.io/v1alpha1",
 			Kind:       "Component",
 		},
@@ -52,48 +34,51 @@ func NewKomponent(resources []string) Komponent {
 
 // KustomizeFromYAMLPath reads the file at path and returns a
 // Kustomization object.
-func KustomizeFromYAMLPath(path string) (Kustomization, error) {
-	var kustom Kustomization
+func KustomizeFromYAMLPath(path string) (kustomizationAPITypes.Kustomization, error) {
+	var kustom kustomizationAPITypes.Kustomization
 
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return Kustomization{}, err
+		return kustom, err
 	}
 
-	err = yaml.Unmarshal(content, &kustom)
+	err = kustom.Unmarshal(content)
 	if err != nil {
-		return Kustomization{}, err
+		return kustomizationAPITypes.Kustomization{}, err
 	}
 
 	return kustom, nil
 }
 
-func (kustom *Kustomization) Write(path string) error {
-	kustomOut := ToYAML(kustom)
-
-	log.Debugf("writing kustomization for %s", path)
-	err := ioutil.WriteFile(
-		filepath.Join(path, "kustomization.yaml"),
-		kustomOut, 0644,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to write kustomization: %w", err)
+func SortKustomization(kustom kustomizationAPITypes.Kustomization) kustomizationAPITypes.Kustomization {
+	resources := make([]string, len(kustom.Resources))
+	copy(resources, kustom.Resources)
+	if len(resources) > 0 {
+		if !sort.StringsAreSorted(resources) {
+			sort.Strings(resources)
+		}
 	}
 
-	return nil
-}
-
-func (komp *Komponent) Write(path string) error {
-	kompOut := ToYAML(komp)
-
-	log.Debugf("writing component kustomization for %s", path)
-	err := ioutil.WriteFile(
-		filepath.Join(path, "kustomization.yaml"),
-		kompOut, 0644,
-	)
-	if err != nil {
-		return fmt.Errorf("failed to write kustomization: %w", err)
+	components := make([]string, len(kustom.Components))
+	copy(components, kustom.Components)
+	if len(components) > 0 {
+		if !sort.StringsAreSorted(components) {
+			sort.Strings(components)
+		}
 	}
 
-	return nil
+	rsrc := kustomizationAPITypes.Kustomization{
+		TypeMeta: kustomizationAPITypes.TypeMeta{
+			APIVersion: kustom.APIVersion,
+			Kind:       kustom.Kind,
+		},
+		Namespace:             kustom.Namespace,
+		Resources:             resources,
+		Components:            components,
+		Generators:            kustom.Generators,
+		PatchesStrategicMerge: kustom.PatchesStrategicMerge,
+		PatchesJson6902:       kustom.PatchesJson6902,
+	}
+	return rsrc
+
 }

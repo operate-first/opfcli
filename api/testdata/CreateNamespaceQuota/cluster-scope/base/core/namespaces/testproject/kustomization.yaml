@@ -4,6 +4,6 @@ namespace: testproject
 resources:
     - namespace.yaml
 components:
+    - ../../../../components/limitranges/default
     - ../../../../components/project-admin-rolebindings/testgroup
     - ../../../../components/resourcequotas/testquota
-    - ../../../../components/limitranges/default

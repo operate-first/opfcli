@@ -37,7 +37,7 @@ func (api *API) AddComponent(projectName, componentName string) error {
 	log.Printf("adding component %s to project %s", componentName, projectName)
 	err = utils.AddKustomizeComponent(
 		nsPath,
-		filepath.Join(constants.ComponentRelPath, componentName),
+		[]string{filepath.Join(constants.ComponentRelPath, componentName)},
 	)
 	if err != nil {
 		return err

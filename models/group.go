@@ -11,7 +11,7 @@ type Group struct {
 }
 
 // NewGroup creates a new Group object.
-func NewGroup(name string) Group {
+func NewGroup(name string, users []string) Group {
 	if len(name) == 0 {
 		log.Fatal("a group requires a name")
 	}
@@ -24,7 +24,7 @@ func NewGroup(name string) Group {
 				Name: name,
 			},
 		},
-		Users: make([]string, 0),
+		Users: users,
 	}
 	return rsrc
 }

@@ -55,7 +55,7 @@ func (api *API) AddGroupRBAC(projectName, groupName, roleName string) error {
 	log.Printf("granting %s role %s on %s", groupName, roleName, projectName)
 	err = utils.AddKustomizeComponent(
 		nsPath,
-		filepath.Join(constants.ComponentRelPath, bindingName, groupName),
+		[]string{filepath.Join(constants.ComponentRelPath, bindingName, groupName)},
 	)
 	if err != nil {
 		return err
