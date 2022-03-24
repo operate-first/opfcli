@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"strings"
+
 	"github.com/operate-first/opfcli/api"
 	"github.com/spf13/cobra"
 )
@@ -16,9 +18,19 @@ Create the group resource and associated kustomization file`,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return opfapi.CreateGroup(args[0], false)
+			usersStr, err := cmd.Flags().GetString("users")
+			users := []string{""}
+			if err != nil {
+				return err
+			}
+			if usersStr != "" {
+				users = strings.Split(usersStr, ",")
+			}
+			return opfapi.CreateGroup(args[0], users, false)
 		},
 	}
+
+	cmd.Flags().StringP("users", "u", "", "Comma seperated list of github handles to add to the group")
 
 	return cmd
 }

@@ -35,7 +35,10 @@ func (api *API) CreateRoleBinding(groupName, roleName string) error {
 		roleName,
 	)
 	rbac.AddGroup(groupName)
-	rbacOut := models.ToYAML(rbac)
+	rbacOut, err := models.ToYAML(rbac)
+	if err != nil {
+		return err
+	}
 
 	log.Printf("writing rbac definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -51,7 +54,7 @@ func (api *API) CreateRoleBinding(groupName, roleName string) error {
 		[]string{"rbac.yaml"},
 	)
 
-	err = komp.Write(filepath.Dir(path))
+	err = utils.WriteKustomization(filepath.Dir(path), komp)
 	if err != nil {
 		return err
 	}

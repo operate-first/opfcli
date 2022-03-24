@@ -64,7 +64,10 @@ func (api *API) CreateNamespace(
 	}
 
 	ns := models.NewNamespace(projectName, projectOwner, projectDisplayName)
-	nsOut := models.ToYAML(ns)
+	nsOut, err := models.ToYAML(ns)
+	if err != nil {
+		return err
+	}
 
 	log.Printf("writing namespace definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -81,7 +84,7 @@ func (api *API) CreateNamespace(
 		components,
 		projectName,
 	)
-	err = kustom.Write(filepath.Dir(path))
+	err = utils.WriteKustomization(filepath.Dir(path), kustom)
 	if err != nil {
 		return err
 	}

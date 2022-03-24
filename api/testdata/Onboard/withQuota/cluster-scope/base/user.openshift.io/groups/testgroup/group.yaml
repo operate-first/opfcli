@@ -1,0 +1,7 @@
+apiVersion: user.openshift.io/v1
+kind: Group
+metadata:
+    name: testgroup
+users:
+    - testing_gh_handle_1
+    - testing_gh_handle_2

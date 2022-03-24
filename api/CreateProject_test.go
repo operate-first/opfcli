@@ -34,7 +34,7 @@ func (suite *apiTestSuite) TestCreateProject() {
 func (suite *apiTestSuite) TestCreateProjectWhenGroupExists() {
 	assert := require.New(suite.T())
 
-	err := suite.api.CreateGroup("testgroup", false)
+	err := suite.api.CreateGroup("testgroup", []string{}, false)
 	assert.Nil(err)
 
 	err = suite.api.CreateProject(

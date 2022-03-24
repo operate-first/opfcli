@@ -1,0 +1,19 @@
+env: MOC
+namespaces:
+  - enable_monitoring: false
+    name: testproject
+    quota: testquota
+    custom_quota:
+      limits.cpu: '28'
+      requests.cpu: '28'
+      limits.memory: 32Gi
+      requests.memory: 32Gi
+      limits.storage: 200Gi
+      requests.storage: 100Gi
+      count/objectbucketclaims.objectbucket.io: 1
+project_description: This is the configuration for a sample project / app to onboard
+target_cluster: Smaug
+team_name: testgroup
+users:
+  - testing_gh_handle_1
+  - testing_gh_handle_2

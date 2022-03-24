@@ -37,7 +37,10 @@ func (api *API) CreateSubscription(name, catalog, namespace, channel string, man
 		name, catalog, channel, strategy,
 	)
 
-	subOut := models.ToYAML(sub)
+	subOut, err := models.ToYAML(sub)
+	if err != nil {
+		return err
+	}
 
 	log.Printf("writing subscription definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -49,12 +52,11 @@ func (api *API) CreateSubscription(name, catalog, namespace, channel string, man
 		return fmt.Errorf("failed to write subscription: %w", err)
 	}
 
-	kustomize := models.NewKustomization(
-		[]string{"subscription.yaml"}, nil, "",
+	kustom := models.NewKustomization(
+		[]string{"subscription.yaml"}, nil, namespace,
 	)
-	kustomize.Namespace = namespace
 
-	err = kustomize.Write(filepath.Dir(path))
+	err = utils.WriteKustomization(filepath.Dir(path), kustom)
 	if err != nil {
 		return err
 	}

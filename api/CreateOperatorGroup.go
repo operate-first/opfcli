@@ -33,7 +33,10 @@ func (api *API) CreateOperatorGroup(namespace string, singleNamespace bool) erro
 		namespace, singleNamespace,
 	)
 
-	ogOut := models.ToYAML(og)
+	ogOut, err := models.ToYAML(og)
+	if err != nil {
+		return err
+	}
 
 	log.Printf("writing operator group definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -45,11 +48,11 @@ func (api *API) CreateOperatorGroup(namespace string, singleNamespace bool) erro
 		return fmt.Errorf("failed to write operator group: %w", err)
 	}
 
-	kustomize := models.NewKustomization(
+	kustom := models.NewKustomization(
 		[]string{"operatorgroup.yaml"}, nil, namespace,
 	)
 
-	err = kustomize.Write(filepath.Dir(path))
+	err = utils.WriteKustomization(filepath.Dir(path), kustom)
 	if err != nil {
 		return err
 	}

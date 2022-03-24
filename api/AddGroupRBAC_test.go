@@ -51,6 +51,7 @@ func (suite *apiTestSuite) TestAddGroupRBAC() {
 	// Should work if both project and group exist
 	err = suite.api.CreateGroup(
 		"testgroup2",
+		[]string{},
 		false,
 	)
 	assert.Nil(err)

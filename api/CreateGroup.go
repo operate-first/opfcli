@@ -6,14 +6,13 @@ import (
 	"os"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/operate-first/opfcli/constants"
 	"github.com/operate-first/opfcli/models"
 	"github.com/operate-first/opfcli/utils"
+	log "github.com/sirupsen/logrus"
 )
 
-func (api *API) CreateGroup(groupName string, existsOk bool) error {
+func (api *API) CreateGroup(groupName string, users []string, existsOk bool) error {
 	path := filepath.Join(
 		api.RepoDirectory, api.AppName,
 		constants.GroupPath, groupName, "group.yaml")
@@ -31,8 +30,11 @@ func (api *API) CreateGroup(groupName string, existsOk bool) error {
 		return fmt.Errorf("group %s already exists", groupName)
 	}
 
-	group := models.NewGroup(groupName)
-	groupOut := models.ToYAML(group)
+	group := models.NewGroup(groupName, users)
+	groupOut, err := models.ToYAML(group)
+	if err != nil {
+		return err
+	}
 
 	log.Printf("writing group definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -49,7 +51,8 @@ func (api *API) CreateGroup(groupName string, existsOk bool) error {
 		nil,
 		"",
 	)
-	err = kustom.Write(filepath.Dir(path))
+
+	err = utils.WriteKustomization(filepath.Dir(path), kustom)
 	if err != nil {
 		return err
 	}
