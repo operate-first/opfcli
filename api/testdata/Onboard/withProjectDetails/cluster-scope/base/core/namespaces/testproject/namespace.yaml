@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: testproject
+    annotations:
+        openshift.io/requester: testgroup
+        op1st/project-owner: testgroup
+        op1st/onboarding-issue: "https://github.com/operate-first/support/issues/414141"
+        op1st/docs: "https://www.operate-first.cloud"

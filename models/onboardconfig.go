@@ -22,6 +22,8 @@ type OnboardingRequest struct {
 	TargetCluster      string   `yaml:"target_cluster"`
 	TeamName           string   `yaml:"team_name"`
 	Users              []string `yaml:",omitempty"`
+	OnboardingIssue    string   `yaml:"onboarding_issue,omitempty"`
+	Docs               string   `yaml:"docs,omitempty"`
 }
 
 func OnboardRequestFromYAMLPath(path string) (OnboardingRequest, error) {
