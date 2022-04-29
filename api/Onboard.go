@@ -50,6 +50,8 @@ func (api *API) Onboard(path string) error {
 			tempQuota,
 			onboardRequest.Namespaces[i].DisableLimitRange,
 			true,
+			onboardRequest.OnboardingIssue,
+			onboardRequest.Docs,
 		); err != nil {
 			return err
 		}

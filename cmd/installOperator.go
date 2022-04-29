@@ -42,7 +42,7 @@ func NewCmdInstallOperator(opfapi *api.API) *cobra.Command {
 				return err
 			}
 
-			if err := opfapi.CreateNamespace(namespace, owner, "", "", true, true); err != nil {
+			if err := opfapi.CreateNamespace(namespace, owner, "", "", true, true, "", ""); err != nil {
 				return err
 			}
 

@@ -14,7 +14,7 @@ type Namespace struct {
 // "owner" and "displayName" parameters are used to initialize the
 // "openshift.io/requester" and ""openshift.io/display-name"
 // annotations.
-func NewNamespace(name, owner, displayName string) Namespace {
+func NewNamespace(name string, owner string, displayName string, onboardingIssue string, docs string) Namespace {
 	if len(name) == 0 {
 		log.Fatal("a namespace requires a name")
 	}
@@ -34,8 +34,18 @@ func NewNamespace(name, owner, displayName string) Namespace {
 		},
 	}
 	rsrc.Metadata.Annotations["openshift.io/requester"] = owner
+	if len(onboardingIssue) > 0 || len(docs) > 0 {
+		rsrc.Metadata.Annotations["op1st/project-owner"] = owner
+	}
 	if len(displayName) > 0 {
 		rsrc.Metadata.Annotations["openshift.io/display-name"] = displayName
+	}
+
+	if len(onboardingIssue) > 0 {
+		rsrc.Metadata.Annotations["op1st/onboarding-issue"] = onboardingIssue
+	}
+	if len(docs) > 0 {
+		rsrc.Metadata.Annotations["op1st/docs"] = docs
 	}
 
 	return rsrc

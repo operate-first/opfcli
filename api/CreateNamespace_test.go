@@ -12,6 +12,8 @@ func (suite *apiTestSuite) TestCreateNamespace() {
 		"",
 		false,
 		false,
+		"",
+		"",
 	)
 	assert.Nil(err)
 
@@ -33,6 +35,8 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsOk() {
 		"",
 		false,
 		false,
+		"",
+		"",
 	)
 	assert.Nil(err)
 
@@ -43,6 +47,8 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsOk() {
 		"",
 		false,
 		true,
+		"",
+		"",
 	)
 	assert.Nil(err)
 
@@ -64,6 +70,8 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsNotOk() {
 		"",
 		false,
 		false,
+		"",
+		"",
 	)
 	assert.Nil(err)
 
@@ -74,6 +82,8 @@ func (suite *apiTestSuite) TestCreateNamespaceExistsNotOk() {
 		"",
 		false,
 		false,
+		"",
+		"",
 	)
 	assert.EqualError(err, "namespace testproject already exists")
 
@@ -96,11 +106,14 @@ func (suite *apiTestSuite) TestCreateNamespaceQuota() {
 		"testquota",
 		false,
 		false,
+		"",
+		"",
 	)
 	assert.Nil(err)
 
 	expectedPaths := []string{
 		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
+		"cluster-scope/base/core/namespaces/testproject/namespace.yaml",
 	}
 
 	compareWithExpected(assert, "testdata/CreateNamespaceQuota", suite.dir, expectedPaths)
@@ -109,7 +122,7 @@ func (suite *apiTestSuite) TestCreateNamespaceQuota() {
 func (suite *apiTestSuite) TestCreateNamespaceNoLimitrange() {
 	assert := require.New(suite.T())
 
-	// Should fail if quota doesn't exist
+	// Should suceed with no limit range
 	err := suite.api.CreateNamespace(
 		"testproject",
 		"testgroup",
@@ -117,12 +130,39 @@ func (suite *apiTestSuite) TestCreateNamespaceNoLimitrange() {
 		"",
 		true,
 		false,
+		"",
+		"",
 	)
 	assert.Nil(err)
 
 	expectedPaths := []string{
 		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
+		"cluster-scope/base/core/namespaces/testproject/namespace.yaml",
 	}
 
 	compareWithExpected(assert, "testdata/CreateNamespaceNoLimitrange", suite.dir, expectedPaths)
+}
+
+func (suite *apiTestSuite) TestCreateNamespaceWithProjectDetails() {
+	assert := require.New(suite.T())
+
+	// Should succeed
+	err := suite.api.CreateNamespace(
+		"testproject",
+		"testgroup",
+		"test display name",
+		"",
+		true,
+		false,
+		"https://github.com/operate-first/support/issues/414141",
+		"https://www.operate-first.cloud",
+	)
+	assert.Nil(err)
+
+	expectedPaths := []string{
+		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
+		"cluster-scope/base/core/namespaces/testproject/namespace.yaml",
+	}
+
+	compareWithExpected(assert, "testdata/CreateNamespaceWithProjectDetails", suite.dir, expectedPaths)
 }

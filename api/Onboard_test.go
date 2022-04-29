@@ -298,3 +298,67 @@ func (suite *apiTestSuite) TestOnboardDisableLimitRangeAndDisplayName() {
 
 	compareWithExpected(assert, "testdata/Onboard/disableLimitRangeAndDisplayName", suite.dir, expectedPaths)
 }
+
+func (suite *apiTestSuite) TestOnboardWithProjectDetails() {
+	assert := require.New(suite.T())
+
+	prodOverlayPath := filepath.Join(
+		suite.api.RepoDirectory, suite.api.AppName, constants.ProdOverlayPath, "moc", "smaug",
+	)
+
+	prodOverlayPathExists, err := utils.PathExists(prodOverlayPath)
+	assert.Nil(err)
+	if !prodOverlayPathExists {
+		log.Printf("Onboard needs moc/smaug overlay path for testing (based on sampleOnboardingConfig), as it is meant for use in operate-first/apps. Creating.")
+		err = os.MkdirAll(prodOverlayPath, 0755)
+		assert.Nil(err)
+	}
+	prodOverlayKustomizationPath := filepath.Join(prodOverlayPath, "kustomization.yaml")
+
+	prodOverlayKustomizationExists, err := utils.PathExists(prodOverlayKustomizationPath)
+	assert.Nil(err)
+	if !prodOverlayKustomizationExists {
+		kustom := models.NewKustomization([]string{"../../../../base"}, nil, "")
+		err = utils.WriteKustomization(prodOverlayPath, kustom)
+		assert.Nil(err)
+	}
+
+	commonOverlayPath := filepath.Join(suite.api.RepoDirectory, suite.api.AppName, constants.CommonOverlayPath)
+	commonOverlayPathExists, err := utils.PathExists(commonOverlayPath)
+	assert.Nil(err)
+	if !commonOverlayPathExists {
+		log.Printf("Onboard needs common overlay path for testing (based on sampleOnboardingConfig), as it is meant for use in operate-first/apps. Creating.")
+		err = os.MkdirAll(commonOverlayPath, 0755)
+		assert.Nil(err)
+	}
+	commonOverlayKustomizationPath := filepath.Join(commonOverlayPath, "kustomization.yaml")
+	commonOverlayKustomizationExists, err := utils.PathExists(commonOverlayKustomizationPath)
+	assert.Nil(err)
+	if !commonOverlayKustomizationExists {
+		kustom := models.NewKustomization([]string{"../../../base"}, nil, "")
+		err = utils.WriteKustomization(commonOverlayPath, kustom)
+		assert.Nil(err)
+	}
+
+	err = suite.api.Onboard(
+		"./testdata/Onboard/sampleOnboardConfigWithProjectDetails.yaml",
+	)
+	assert.Nil(err)
+
+	expectedPaths := []string{
+		"cluster-scope/base/core/namespaces/testproject/kustomization.yaml",
+		"cluster-scope/base/core/namespaces/testproject/namespace.yaml",
+
+		"cluster-scope/base/user.openshift.io/groups/testgroup/kustomization.yaml",
+		"cluster-scope/base/user.openshift.io/groups/testgroup/group.yaml",
+
+		"cluster-scope/components/project-admin-rolebindings/testgroup/kustomization.yaml",
+		"cluster-scope/components/project-admin-rolebindings/testgroup/rbac.yaml",
+
+		"cluster-scope/overlays/prod/common/kustomization.yaml",
+		"cluster-scope/overlays/prod/moc/smaug/kustomization.yaml",
+	}
+
+	compareWithExpected(assert, "testdata/Onboard/withProjectDetails", suite.dir, expectedPaths)
+
+}

@@ -13,10 +13,14 @@ import (
 )
 
 func (api *API) CreateNamespace(
-	projectName, projectOwner, projectDisplayName string,
+	projectName string,
+	projectOwner string,
+	projectDisplayName string,
 	projectQuota string,
 	disableLimitrange bool,
 	existsOk bool,
+	onboardingIssue string,
+	docs string,
 ) error {
 	path := filepath.Join(
 		api.RepoDirectory, api.AppName,
@@ -30,6 +34,7 @@ func (api *API) CreateNamespace(
 	if exists {
 		if existsOk {
 			log.Warnf("namespace %s already exists (continuing)", projectName)
+			// check if onboardingIssue and docs are set
 			return nil
 		}
 		return fmt.Errorf("namespace %s already exists", projectName)
@@ -63,7 +68,7 @@ func (api *API) CreateNamespace(
 			))
 	}
 
-	ns := models.NewNamespace(projectName, projectOwner, projectDisplayName)
+	ns := models.NewNamespace(projectName, projectOwner, projectDisplayName, onboardingIssue, docs)
 	nsOut, err := models.ToYAML(ns)
 	if err != nil {
 		return err
