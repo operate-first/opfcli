@@ -78,6 +78,7 @@ func SortKustomization(kustom kustomizationAPITypes.Kustomization) kustomization
 		Generators:            kustom.Generators,
 		PatchesStrategicMerge: kustom.PatchesStrategicMerge,
 		PatchesJson6902:       kustom.PatchesJson6902,
+		Patches:               kustom.Patches,
 	}
 	return rsrc
 
